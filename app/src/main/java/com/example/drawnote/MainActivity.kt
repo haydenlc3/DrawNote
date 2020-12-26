@@ -14,7 +14,6 @@ import androidx.core.view.isVisible
 
 class MainActivity : AppCompatActivity() {
     private lateinit var display: Display
-    private var colorBackground = Color.WHITE
     private var brushSize = 12; private var eraserSize = 12
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         val eraserToolbar = findViewById<View>(R.id.toolbar_modify_eraser)
         val openMenu = findViewById<ImageButton>(R.id.openMenu)
         val openBrush = findViewById<ImageButton>(R.id.paint)
-        val addText = findViewById<ImageButton>(R.id.colorBlack)
+        val addText = findViewById<ImageButton>(R.id.addText)
         val openEraser = findViewById<ImageButton>(R.id.eraser)
         val delete = findViewById<ImageButton>(R.id.delete)
         val undo = findViewById<ImageButton>(R.id.undo)

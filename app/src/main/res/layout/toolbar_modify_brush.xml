@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:contentDescription="@color/black"
+                    android:contentDescription="#000000"
                     android:tint="@color/black"
                     app:srcCompat="@drawable/circle" />
 
@@ -94,6 +94,7 @@
                     android:contentDescription="#0000ff"
                     android:tint="#0000FF"
                     app:srcCompat="@drawable/circle" />
+
             </LinearLayout>
         </HorizontalScrollView>
 
