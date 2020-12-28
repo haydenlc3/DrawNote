@@ -9,12 +9,15 @@ import kotlin.math.abs
 
 class Display : View {
     private lateinit var btmBackground: Bitmap; private lateinit var btmView: Bitmap
+    private var addTextSelected = false
     private var mPaint: Paint = Paint()
     private var mPath: Path = Path()
     private var mCanvas: Canvas = Canvas()
-    private var colorBackground: Int = Color.WHITE
     private var sizeBrush: Int = 12
     private var sizeEraser: Int = 12
+    private var text: String = "Add text"
+    private var textColor: Int = Color.BLACK
+    private var textSize: Float = 50f
     private var mX: Float = 0.0f; private var mY: Float = 0.0f
     private val DEFERENCE_SPACE: Int = 4
     private var listAction = ArrayList<Bitmap>()
@@ -46,14 +49,9 @@ class Display : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        canvas?.drawColor(colorBackground)
+        canvas?.drawColor(Color.WHITE)
         canvas?.drawBitmap(btmBackground, 0f, 0f, null)
         canvas?.drawBitmap(btmView, 0f, 0f, null)
-    }
-
-    fun setColorBackground(color: Int) {
-        colorBackground = color
-        invalidate()
     }
 
     fun setSizeBrush(s: Int) {
@@ -80,6 +78,22 @@ class Display : View {
         mPaint.maskFilter = null
     }
 
+    fun setText(s: String) {
+        text = s
+    }
+
+    fun setTextColor(color: Int) {
+        textColor = color
+    }
+
+    fun setTextSize(size: Float) {
+        textSize = size
+    }
+
+    fun setAddTextSelected(b: Boolean) {
+        addTextSelected = b
+    }
+
     private fun addLastAction(bitmap: Bitmap) {
         listAction.add(bitmap)
     }
@@ -102,20 +116,33 @@ class Display : View {
         var x = event?.x
         var y = event?.y
 
-        when (event?.action) {
-            MotionEvent.ACTION_DOWN -> touchStart(x, y)
-            MotionEvent.ACTION_MOVE -> touchMove(x, y)
-            MotionEvent.ACTION_UP -> {
-                touchUp()
-                addLastAction(getBitmap())
+        if (addTextSelected) {
+            when (event?.action) {
+                MotionEvent.ACTION_UP -> {
+                    addText(x, y)
+                    addLastAction(getBitmap())
+                }
+            }
+        } else {
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> touchStart(x, y)
+                MotionEvent.ACTION_MOVE -> touchMove(x, y)
+                MotionEvent.ACTION_UP -> {
+                    mPath.reset()
+                    addLastAction(getBitmap())
+                }
             }
         }
 
         return true
     }
 
-    private fun touchUp() {
-        mPath.reset()
+    private fun addText(x: Float?, y: Float?) {
+        mPaint.textSize = textSize
+        mPaint.color = textColor
+        mPaint.style = Paint.Style.FILL
+        mCanvas.drawText(text, x!!, y!!, mPaint)
+        invalidate()
     }
 
     private fun touchMove(x: Float?, y: Float?) {
