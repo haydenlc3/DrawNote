@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         delete.setOnClickListener() {
-            //
+            display.clearCanvas()
         }
 
         undo.setOnClickListener() {

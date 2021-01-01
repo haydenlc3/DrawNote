@@ -35,7 +35,7 @@
                     android:layout_weight="1"
                     android:ems="8"
                     android:inputType="textPersonName"
-                    android:text="Add text" />
+                    android:text="@string/text_default"/>
 
                 <Space
                     android:layout_width="5dp"

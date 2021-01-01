@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">DrawNote</string>
+    <string name="text_default">Add text</string>
 </resources>

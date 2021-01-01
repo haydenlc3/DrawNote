@@ -1,10 +1,13 @@
 package com.example.drawnote
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.*
+import android.provider.Settings.Secure.getString
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.widget.EditText
 import kotlin.math.abs
 
 class Display : View {
@@ -17,6 +20,7 @@ class Display : View {
     private var sizeEraser: Int = 12
     private var text: String = "Add text"
     private var textColor: Int = Color.BLACK
+    private var colorBackground: Int = Color.WHITE
     private var textSize: Float = 50f
     private var mX: Float = 0.0f; private var mY: Float = 0.0f
     private val DEFERENCE_SPACE: Int = 4
@@ -49,7 +53,7 @@ class Display : View {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        canvas?.drawColor(Color.WHITE)
+        canvas?.drawColor(colorBackground)
         canvas?.drawBitmap(btmBackground, 0f, 0f, null)
         canvas?.drawBitmap(btmView, 0f, 0f, null)
     }
@@ -94,6 +98,12 @@ class Display : View {
         addTextSelected = b
     }
 
+    fun clearCanvas() {
+        mCanvas.drawColor(colorBackground)
+        invalidate()
+        addLastAction(getBitmap())
+    }
+
     private fun addLastAction(bitmap: Bitmap) {
         listAction.add(bitmap)
     }
@@ -113,8 +123,8 @@ class Display : View {
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        var x = event?.x
-        var y = event?.y
+        val x = event?.x
+        val y = event?.y
 
         if (addTextSelected) {
             when (event?.action) {
@@ -146,8 +156,8 @@ class Display : View {
     }
 
     private fun touchMove(x: Float?, y: Float?) {
-        var dx = abs(x!!-mX)
-        var dy = abs(y!!-mY)
+        val dx = abs(x!!-mX)
+        val dy = abs(y!!-mY)
 
         if (dx >= DEFERENCE_SPACE || dy >= DEFERENCE_SPACE) {
             mPath.quadTo(x, y, (x+mX)/2, (y+mY)/2)
@@ -158,6 +168,7 @@ class Display : View {
     }
 
     private fun touchStart(x: Float?, y: Float?) {
+        mPaint.style = Paint.Style.STROKE
         mPath.moveTo(x!!, y!!)
         mX = x; mY = y
     }
