@@ -1,13 +1,10 @@
 package com.example.drawnote
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.*
-import android.provider.Settings.Secure.getString
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import android.widget.EditText
 import kotlin.math.abs
 
 class Display : View {
@@ -18,6 +15,8 @@ class Display : View {
     private var mCanvas: Canvas = Canvas()
     private var sizeBrush: Int = 12
     private var sizeEraser: Int = 12
+    private var styleBrush: Paint.Style = Paint.Style.FILL
+    private var styleEraser: Paint.Style = Paint.Style.FILL
     private var text: String = "Add text"
     private var textColor: Int = Color.BLACK
     private var colorBackground: Int = Color.WHITE
@@ -34,7 +33,7 @@ class Display : View {
         mPaint.color = Color.BLACK
         mPaint.isAntiAlias = true
         mPaint.isDither = true
-        mPaint.style = Paint.Style.STROKE
+        mPaint.style = styleBrush
         mPaint.strokeCap = Paint.Cap.ROUND
         mPaint.strokeJoin = Paint.Join.ROUND
         mPaint.strokeWidth = toPx(sizeBrush)
@@ -73,6 +72,7 @@ class Display : View {
     }
 
     fun enableEraser() {
+        mPaint.style = styleEraser
         mPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
     }
 
@@ -110,7 +110,7 @@ class Display : View {
 
     fun returnLastAction() {
         if (listAction.size > 0) {
-            listAction.removeAt(listAction.size-1) // may not work
+            listAction.removeAt(listAction.size-1)
             btmView = if (listAction.size > 0) {
                 listAction[listAction.size-1]
             } else {
@@ -148,10 +148,12 @@ class Display : View {
     }
 
     private fun addText(x: Float?, y: Float?) {
+        val bounds = Rect()
+        mPaint.getTextBounds(text, 0, text.length, bounds)
         mPaint.textSize = textSize
         mPaint.color = textColor
         mPaint.style = Paint.Style.FILL
-        mCanvas.drawText(text, x!!, y!!, mPaint)
+        mCanvas.drawText(text, -bounds.right/2 + x!!, -bounds.top/2 + y!!, mPaint)
         invalidate()
     }
 
@@ -168,7 +170,7 @@ class Display : View {
     }
 
     private fun touchStart(x: Float?, y: Float?) {
-        mPaint.style = Paint.Style.STROKE
+        mPaint.style = styleBrush
         mPath.moveTo(x!!, y!!)
         mX = x; mY = y
     }
@@ -176,9 +178,8 @@ class Display : View {
     private fun getBitmap(): Bitmap {
         this.isDrawingCacheEnabled = true
         this.buildDrawingCache()
-        var bitmap = Bitmap.createBitmap(this.drawingCache)
+        val bitmap = Bitmap.createBitmap(this.drawingCache)
         this.isDrawingCacheEnabled = false
         return bitmap
     }
 }
-

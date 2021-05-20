@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         for (i: Int in 1 until colorLayout.childCount) {
             brushColors.add(colorLayout[i] as ImageButton)
-            colorLayout[i].setOnClickListener() {
+            colorLayout[i].setOnClickListener {
                 clearSelections(brushColors, colorLayout[i] as ImageButton)
                 display.setBrushColor(Color.parseColor(colorLayout[i].contentDescription.toString()))
             }
@@ -54,18 +54,18 @@ class MainActivity : AppCompatActivity() {
         for (i: Int in 0 until colorLayout1.childCount) {
             if (colorLayout1[i] is ImageButton) {
                 textColors.add(colorLayout1[i] as ImageButton)
-                colorLayout1[i].setOnClickListener() {
+                colorLayout1[i].setOnClickListener {
                     clearSelections(textColors, colorLayout1[i] as ImageButton)
                     display.setTextColor(Color.parseColor(colorLayout1[i].contentDescription.toString()))
                 }
             }
         }
 
-        openMenu.setOnClickListener() {
+        openMenu.setOnClickListener {
             //
         }
 
-        openBrush.setOnClickListener() {
+        openBrush.setOnClickListener {
             clearSelections(tools, openBrush)
             display.setAddTextSelected(false)
             mainToolbar.isGone = true
@@ -73,14 +73,15 @@ class MainActivity : AppCompatActivity() {
             display.disableEraser()
         }
 
-        addText.setOnClickListener() {
+        addText.setOnClickListener {
             clearSelections(tools, addText)
             display.setAddTextSelected(true)
+            display.disableEraser()
             mainToolbar.isGone = true
             textToolbar.isVisible = true
         }
 
-        openEraser.setOnClickListener() {
+        openEraser.setOnClickListener {
             clearSelections(tools, openEraser)
             display.setAddTextSelected(false)
             mainToolbar.isGone = true
@@ -88,30 +89,30 @@ class MainActivity : AppCompatActivity() {
             display.enableEraser()
         }
 
-        delete.setOnClickListener() {
+        delete.setOnClickListener {
             display.clearCanvas()
         }
 
-        undo.setOnClickListener() {
+        undo.setOnClickListener {
             display.returnLastAction()
         }
 
-        goBackBrush.setOnClickListener() {
+        goBackBrush.setOnClickListener {
             brushToolbar.isGone = true
             mainToolbar.isVisible = true
         }
 
-        goBackEraser.setOnClickListener() {
+        goBackEraser.setOnClickListener {
             eraserToolbar.isGone = true
             mainToolbar.isVisible = true
         }
 
-        goBackText.setOnClickListener() {
+        goBackText.setOnClickListener {
             textToolbar.isGone = true
             mainToolbar.isVisible = true
         }
 
-        editText.addTextChangedListener() {
+        editText.addTextChangedListener {
             if (editText.text.toString().isEmpty()) {
                 Toast.makeText(this, "Text is empty",
                         Toast.LENGTH_SHORT).show()
@@ -120,7 +121,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        editFontSize.addTextChangedListener() {
+        editFontSize.addTextChangedListener {
             if (editFontSize.text.toString().isNotEmpty() && editFontSize.text.toString().toInt() > 0) {
                 display.setTextSize(editFontSize.text.toString().toFloat())
             } else {
