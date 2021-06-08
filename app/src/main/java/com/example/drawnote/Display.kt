@@ -5,6 +5,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 class Display : View {
@@ -15,15 +16,16 @@ class Display : View {
     private var mCanvas: Canvas = Canvas()
     private var sizeBrush: Int = 12
     private var sizeEraser: Int = 12
-    private var styleBrush: Paint.Style = Paint.Style.FILL
-    private var styleEraser: Paint.Style = Paint.Style.FILL
+    private var styleBrush: Paint.Style = Paint.Style.STROKE
+    private var styleEraser: Paint.Style = Paint.Style.STROKE
     private var text: String = "Add text"
     private var textColor: Int = Color.BLACK
     private var colorBackground: Int = Color.WHITE
     private var textSize: Float = 50f
     private var mX: Float = 0.0f; private var mY: Float = 0.0f
-    private val DEFERENCE_SPACE: Int = 4
     private var listAction = ArrayList<Bitmap>()
+    private val deferenceSpace: Int = 4
+    private val imgSaver = ImageSaver(context)
 
     constructor (context: Context?): super(context)
     constructor (context: Context?, attrs: AttributeSet): super(context, attrs)
@@ -37,6 +39,7 @@ class Display : View {
         mPaint.strokeCap = Paint.Cap.ROUND
         mPaint.strokeJoin = Paint.Join.ROUND
         mPaint.strokeWidth = toPx(sizeBrush)
+        imgSaver.setFolderName(resources.getString(R.string.app_name))
     }
 
     private fun toPx(sizeBrush: Int): Float {
@@ -104,6 +107,18 @@ class Display : View {
         addLastAction(getBitmap())
     }
 
+    fun saveImage() {
+        imgSaver.saveImageToGallery(getBitmap())
+    }
+
+    fun shareImage() {
+        imgSaver.shareImage(getBitmap())
+    }
+
+    fun loadImage(path: String) {
+        imgSaver.loadImage(path, mCanvas)
+    }
+
     private fun addLastAction(bitmap: Bitmap) {
         listAction.add(bitmap)
     }
@@ -161,7 +176,7 @@ class Display : View {
         val dx = abs(x!!-mX)
         val dy = abs(y!!-mY)
 
-        if (dx >= DEFERENCE_SPACE || dy >= DEFERENCE_SPACE) {
+        if (dx >= deferenceSpace || dy >= deferenceSpace) {
             mPath.quadTo(x, y, (x+mX)/2, (y+mY)/2)
             mY = y; mX = x
             mCanvas.drawPath(mPath, mPaint)
@@ -181,5 +196,9 @@ class Display : View {
         val bitmap = Bitmap.createBitmap(this.drawingCache)
         this.isDrawingCacheEnabled = false
         return bitmap
+    }
+
+    fun getPath(): String {
+        return imgSaver.getPath()
     }
 }

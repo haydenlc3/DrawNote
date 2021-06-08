@@ -1,5 +1,6 @@
 package com.example.drawnote
 
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -9,6 +10,8 @@ import androidx.core.view.get
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import java.io.File
+import java.io.FileInputStream
 
 
 class MainActivity : AppCompatActivity() {
@@ -24,12 +27,16 @@ class MainActivity : AppCompatActivity() {
         val brushToolbar = findViewById<View>(R.id.toolbar_modify_brush)
         val eraserToolbar = findViewById<View>(R.id.toolbar_modify_eraser)
         val textToolbar = findViewById<View>(R.id.toolbar_modify_text)
+        val menuToolbar = findViewById<View>(R.id.toolbar_menu)
         val openMenu = findViewById<ImageButton>(R.id.openMenu)
+        val closeMenu = findViewById<ImageButton>(R.id.close)
         val openBrush = findViewById<ImageButton>(R.id.paint)
         val addText = findViewById<ImageButton>(R.id.addText)
         val openEraser = findViewById<ImageButton>(R.id.eraser)
         val delete = findViewById<ImageButton>(R.id.delete)
         val undo = findViewById<ImageButton>(R.id.undo)
+        val save = findViewById<ImageButton>(R.id.save)
+        val share = findViewById<ImageButton>(R.id.share)
         val seekBrush = findViewById<SeekBar>(R.id.seekBrush)
         val seekEraser = findViewById<SeekBar>(R.id.seekEraser)
         val goBackBrush = findViewById<ImageButton>(R.id.returnMain)
@@ -37,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         val goBackText = findViewById<ImageButton>(R.id.returnMain2)
         val colorLayout = findViewById<LinearLayout>(R.id.colorlayout)
         val colorLayout1 = findViewById<LinearLayout>(R.id.colorlayout1)
+        val imageLayout = findViewById<LinearLayout>(R.id.imageLayout)
         val editText = findViewById<EditText>(R.id.editText)
         val editFontSize = findViewById<EditText>(R.id.editFontSize)
         val tools = arrayListOf<ImageButton>(openBrush, addText, openEraser)
@@ -62,7 +70,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         openMenu.setOnClickListener {
-            //
+            updateScrollView(imageLayout)
+            menuToolbar.isVisible = true
         }
 
         openBrush.setOnClickListener {
@@ -112,6 +121,19 @@ class MainActivity : AppCompatActivity() {
             mainToolbar.isVisible = true
         }
 
+        closeMenu.setOnClickListener {
+            menuToolbar.isVisible = false
+        }
+
+        save.setOnClickListener {
+            display.saveImage()
+            Toast.makeText(applicationContext,"Image saved to gallery", Toast.LENGTH_SHORT).show()
+        }
+
+        share.setOnClickListener {
+            display.shareImage()
+        }
+
         editText.addTextChangedListener {
             if (editText.text.toString().isEmpty()) {
                 Toast.makeText(this, "Text is empty",
@@ -129,6 +151,18 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT).show()
             }
         }
+
+/*        imageLayout.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
+            override fun onChildViewAdded(parent: View, child: View) {
+                if (child is ImageButton) {
+                    child.setOnClickListener {
+                        display.loadImage("")
+                    }
+                }
+            }
+
+            override fun onChildViewRemoved(parent: View, child: View) {}
+        })*/
 
         val i = object: SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
@@ -150,7 +184,21 @@ class MainActivity : AppCompatActivity() {
         for (i in array.indices) {
             array[i].isSelected = false
         }
-
         button.isSelected = true
+    }
+
+    private fun updateScrollView(imageLayout: LinearLayout) {
+        imageLayout.removeAllViews() // removeAllViewsInLayout?
+        File(display.getPath()).walkBottomUp().forEach {
+            if (it.extension == ".jpeg" || it.extension == ".png") {
+                val imgButton = ImageButton(this)
+                val path = it.absolutePath
+                imgButton.setImageBitmap(BitmapFactory.decodeStream(FileInputStream(it)))
+                imgButton.setOnClickListener {
+                    display.loadImage(path)
+                }
+                imageLayout.addView(imgButton)
+            }
+        }
     }
 }
