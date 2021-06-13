@@ -30,8 +30,10 @@
             <ImageButton
                 android:id="@+id/strokeEraser"
                 style="@style/ImageButtonStyle"
-                app:srcCompat="@drawable/stroke"
-                android:contentDescription="@string/eraser_style_stroke" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/eraser_style_stroke"
+                app:srcCompat="@drawable/stroke" />
         </LinearLayout>
 
         <SeekBar
@@ -49,7 +51,6 @@
             android:id="@+id/returnMain1"
             style="@style/ImageButtonStyle"
             android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

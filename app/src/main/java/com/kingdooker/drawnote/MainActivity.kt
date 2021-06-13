@@ -1,4 +1,4 @@
-package com.example.drawnote
+package com.kingdooker.drawnote
 
 import android.app.AlertDialog
 import android.content.DialogInterface

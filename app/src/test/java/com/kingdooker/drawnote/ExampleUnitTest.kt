@@ -1,4 +1,4 @@
-package com.example.drawnote
+package com.kingdooker.drawnote
 
 import org.junit.Test
 
