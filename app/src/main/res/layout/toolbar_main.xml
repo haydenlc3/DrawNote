@@ -26,7 +26,8 @@
                 style="@style/ImageButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/brush" />
+                app:srcCompat="@drawable/brush"
+                android:contentDescription="@string/paint" />
 
             <Space
                 android:layout_width="10dp"
@@ -36,7 +37,8 @@
             <ImageButton
                 android:id="@+id/addText"
                 style="@style/ImageButtonStyle"
-                app:srcCompat="@drawable/add_text" />
+                app:srcCompat="@drawable/add_text"
+                android:contentDescription="@string/add_text" />
 
             <Space
                 android:layout_width="10dp"
@@ -46,7 +48,8 @@
             <ImageButton
                 android:id="@+id/eraser"
                 style="@style/ImageButtonStyle"
-                app:srcCompat="@drawable/eraser" />
+                app:srcCompat="@drawable/eraser"
+                android:contentDescription="@string/eraser" />
         </LinearLayout>
 
         <LinearLayout
@@ -65,19 +68,22 @@
                 style="@style/ImageButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/undo" />
+                app:srcCompat="@drawable/undo"
+                android:contentDescription="@string/undo" />
 
             <Space
                 android:layout_width="5dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                tools:ignore="InefficientWeight" />
 
             <ImageButton
                 android:id="@+id/delete"
                 style="@style/ImageButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/delete" />
+                app:srcCompat="@drawable/clear"
+                android:contentDescription="@string/delete" />
         </LinearLayout>
 
         <ImageButton
@@ -90,7 +96,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/menu" />
+            app:srcCompat="@drawable/menu"
+            android:contentDescription="@string/open_menu" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

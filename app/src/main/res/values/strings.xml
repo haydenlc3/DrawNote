@@ -1,4 +1,25 @@
 <resources>
     <string name="app_name">DrawNote</string>
     <string name="text_default">Add text</string>
+    <string name="paint">Paint</string>
+    <string name="add_text">Add text</string>
+    <string name="eraser">Eraser</string>
+    <string name="undo">Undo</string>
+    <string name="open_menu">Open menu</string>
+    <string name="black">#000000</string>
+    <string name="orange">#964B00</string>
+    <string name="red">#FF0000</string>
+    <string name="yellow">#FFFF00</string>
+    <string name="green">#00FF00</string>
+    <string name="blue">#0000ff</string>
+    <string name="return_main_menu">Return main menu</string>
+    <string name="brush_style_fill">Brush style fill</string>
+    <string name="brush_style_stroke">Brush style stroke</string>
+    <string name="close">Close</string>
+    <string name="delete">Delete</string>
+    <string name="new_file">New file</string>
+    <string name="save">Save</string>
+    <string name="share">Share</string>
+    <string name="eraser_style_fill">Eraser style fill</string>
+    <string name="eraser_style_stroke">Eraser style stroke</string>
 </resources>

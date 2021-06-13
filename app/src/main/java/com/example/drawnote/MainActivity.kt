@@ -1,9 +1,13 @@
 package com.example.drawnote
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
@@ -37,11 +41,17 @@ class MainActivity : AppCompatActivity() {
         val undo = findViewById<ImageButton>(R.id.undo)
         val save = findViewById<ImageButton>(R.id.save)
         val share = findViewById<ImageButton>(R.id.share)
+        val newFile = findViewById<ImageButton>(R.id.newFile)
+        val deleteFile = findViewById<ImageButton>(R.id.deleteFile)
         val seekBrush = findViewById<SeekBar>(R.id.seekBrush)
         val seekEraser = findViewById<SeekBar>(R.id.seekEraser)
         val goBackBrush = findViewById<ImageButton>(R.id.returnMain)
         val goBackEraser = findViewById<ImageButton>(R.id.returnMain1)
         val goBackText = findViewById<ImageButton>(R.id.returnMain2)
+        val fillEraser = findViewById<ImageButton>(R.id.fillEraser)
+        val fillBrush = findViewById<ImageButton>(R.id.fillBrush)
+        val strokeEraser = findViewById<ImageButton>(R.id.strokeEraser)
+        val strokeBrush = findViewById<ImageButton>(R.id.strokeBrush)
         val colorLayout = findViewById<LinearLayout>(R.id.colorlayout)
         val colorLayout1 = findViewById<LinearLayout>(R.id.colorlayout1)
         val imageLayout = findViewById<LinearLayout>(R.id.imageLayout)
@@ -134,6 +144,61 @@ class MainActivity : AppCompatActivity() {
             display.shareImage()
         }
 
+        fillEraser.setOnClickListener {
+            display.setPaintStyle(Paint.Style.FILL, false)
+        }
+
+        fillBrush.setOnClickListener {
+            display.setPaintStyle(Paint.Style.FILL, true)
+        }
+
+        strokeEraser.setOnClickListener {
+            display.setPaintStyle(Paint.Style.STROKE, false)
+        }
+
+        strokeBrush.setOnClickListener {
+            display.setPaintStyle(Paint.Style.STROKE, true)
+        }
+
+        deleteFile.setOnClickListener {
+            if (display.fileExists()) {
+                val dialogClickListener =
+                    DialogInterface.OnClickListener { _, which ->
+                        when (which) {
+                            DialogInterface.BUTTON_POSITIVE -> {
+                                display.deleteImage()
+                                updateScrollView(imageLayout)
+                            }
+                        }
+                    }
+
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show()
+            }
+        }
+
+        newFile.setOnClickListener {
+            val dialogClickListener =
+                DialogInterface.OnClickListener { _, which ->
+                    when (which) {
+                        DialogInterface.BUTTON_POSITIVE -> {
+                            display.saveImage()
+                            display.newImage()
+                            updateScrollView(imageLayout)
+                        }
+                        DialogInterface.BUTTON_NEGATIVE -> {
+                            display.newImage()
+                        }
+                    }
+                }
+
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setMessage("Save your work?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener)
+                .setNeutralButton("Cancel", dialogClickListener).show()
+        }
+
         editText.addTextChangedListener {
             if (editText.text.toString().isEmpty()) {
                 Toast.makeText(this, "Text is empty",
@@ -151,18 +216,6 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT).show()
             }
         }
-
-/*        imageLayout.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
-            override fun onChildViewAdded(parent: View, child: View) {
-                if (child is ImageButton) {
-                    child.setOnClickListener {
-                        display.loadImage("")
-                    }
-                }
-            }
-
-            override fun onChildViewRemoved(parent: View, child: View) {}
-        })*/
 
         val i = object: SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
@@ -190,12 +243,79 @@ class MainActivity : AppCompatActivity() {
     private fun updateScrollView(imageLayout: LinearLayout) {
         imageLayout.removeAllViews() // removeAllViewsInLayout?
         File(display.getPath()).walkBottomUp().forEach {
-            if (it.extension == ".jpeg" || it.extension == ".png") {
+            if (!it.isDirectory){
+                val bitmap = BitmapFactory.decodeStream(FileInputStream(it))
                 val imgButton = ImageButton(this)
+                val fileName = it.nameWithoutExtension
                 val path = it.absolutePath
-                imgButton.setImageBitmap(BitmapFactory.decodeStream(FileInputStream(it)))
+                imgButton.setImageBitmap(bitmap)
+                imgButton.layoutParams = ViewGroup.LayoutParams(-1, -1)
+                imgButton.cropToPadding = true
+                imgButton.scaleType = ImageView.ScaleType.CENTER_CROP
+                imgButton.adjustViewBounds = true
                 imgButton.setOnClickListener {
-                    display.loadImage(path)
+                    if (fileName != display.getFileName()) {
+                        if (display.isNotEmpty()) {
+                            val dialogClickListener =
+                                DialogInterface.OnClickListener { _, which ->
+                                    when (which) {
+                                        DialogInterface.BUTTON_POSITIVE -> {
+                                            display.saveImage()
+                                            display.loadImage(bitmap, fileName)
+                                            updateScrollView(imageLayout)
+                                        }
+                                        DialogInterface.BUTTON_NEGATIVE -> {
+                                            display.loadImage(bitmap, fileName)
+                                        }
+                                    }
+                                }
+
+                            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                            builder.setMessage("Save your work?")
+                                .setPositiveButton("Yes", dialogClickListener)
+                                .setNegativeButton("No", dialogClickListener)
+                                .setNeutralButton("Cancel", dialogClickListener).show()
+                        } else {
+                            display.loadImage(bitmap, fileName)
+                        }
+                    }
+                }
+                imgButton.setOnLongClickListener{
+                    if (fileName != display.getFileName()) {
+                        val dialogClickListener =
+                            DialogInterface.OnClickListener { _, which ->
+                                when (which) {
+                                    DialogInterface.BUTTON_POSITIVE -> {
+                                        val dialogClickListener =
+                                            DialogInterface.OnClickListener { _, whichIn ->
+                                                when (whichIn) {
+                                                    DialogInterface.BUTTON_POSITIVE -> {
+                                                        File(path).delete()
+                                                        updateScrollView(imageLayout)
+                                                    }
+                                                }
+                                            }
+
+                                        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                                        builder.setMessage("Are you sure?")
+                                            .setPositiveButton("Yes", dialogClickListener)
+                                            .setNegativeButton("No", dialogClickListener).show()
+                                    }
+                                    DialogInterface.BUTTON_NEGATIVE -> {
+                                        val imgSaver = ImageSaver(this)
+                                        imgSaver.setFolderName(resources.getString(R.string.app_name))
+                                        imgSaver.shareImage(bitmap, false)
+                                    }
+                                }
+                            }
+
+                        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                        builder.setMessage("Image Actions")
+                            .setPositiveButton("Delete", dialogClickListener)
+                            .setNegativeButton("Share", dialogClickListener)
+                            .setNeutralButton("Cancel", dialogClickListener).show()
+                    }
+                    true
                 }
                 imageLayout.addView(imgButton)
             }

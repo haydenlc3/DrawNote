@@ -5,16 +5,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.core.net.toUri
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.util.*
 
@@ -42,12 +37,12 @@ class ImageSaver(private val context: Context) {
         return directory.absolutePath
     }
 
-    private fun getUri(): Uri {
-        return File(directory, fileName).toUri()
+    fun getFileName(): String {
+        return fileName
     }
 
     @TargetApi(Build.VERSION_CODES.Q)
-    fun saveImageToGallery(bitmap: Bitmap) {
+    fun saveImageToGallery(bitmap: Bitmap): Uri? {
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis())
             put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
@@ -66,13 +61,14 @@ class ImageSaver(private val context: Context) {
             values.put(MediaStore.Images.Media.IS_PENDING, false)
             context.contentResolver.update(uri, values, null, null)
         }
+
+        return uri
     }
 
     fun saveImageToStorage(bitmap: Bitmap) {
-        // Make sure the directory "Android/data/com.mypackage.etc/files/Pictures" exists
         try {
             val out = FileOutputStream(File(directory, fileName))
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
             out.flush()
             out.close()
         } catch (e: Exception) {
@@ -80,21 +76,11 @@ class ImageSaver(private val context: Context) {
         }
     }
 
-    fun loadImage(path: String, canvas: Canvas) {
-        try {
-            val f = File(path, fileName)
-            val b = BitmapFactory.decodeStream(FileInputStream(f))
-            canvas.setBitmap(b)
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        }
-    }
-
-    fun shareImage(bitmap: Bitmap) {
-        saveImageToStorage(bitmap)
+    fun shareImage(bitmap: Bitmap, isNotEmpty: Boolean) {
+        if (isNotEmpty) saveImageToStorage(bitmap)
         val sharingIntent = Intent(Intent.ACTION_SEND)
         sharingIntent.type = "image/*"
-        sharingIntent.putExtra(Intent.EXTRA_STREAM, getUri())
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, saveImageToGallery(bitmap))
         context.startActivities(arrayOf(Intent.createChooser(sharingIntent, "Share with")))
     }
 }

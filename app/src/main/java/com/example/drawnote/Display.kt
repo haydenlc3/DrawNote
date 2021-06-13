@@ -1,13 +1,20 @@
 package com.example.drawnote
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import java.io.File
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 
+
+@Suppress("DEPRECATION")
 class Display : View {
     private lateinit var btmBackground: Bitmap; private lateinit var btmView: Bitmap
     private var addTextSelected = false
@@ -19,7 +26,9 @@ class Display : View {
     private var styleBrush: Paint.Style = Paint.Style.STROKE
     private var styleEraser: Paint.Style = Paint.Style.STROKE
     private var text: String = "Add text"
+    private var eraserEnabled = false
     private var textColor: Int = Color.BLACK
+    private var brushColor: Int = Color.BLACK
     private var colorBackground: Int = Color.WHITE
     private var textSize: Float = 50f
     private var mX: Float = 0.0f; private var mY: Float = 0.0f
@@ -40,10 +49,14 @@ class Display : View {
         mPaint.strokeJoin = Paint.Join.ROUND
         mPaint.strokeWidth = toPx(sizeBrush)
         imgSaver.setFolderName(resources.getString(R.string.app_name))
-    }
 
-    private fun toPx(sizeBrush: Int): Float {
-        return sizeBrush*(resources.displayMetrics.density)
+        val mainHandler = Handler(Looper.getMainLooper())
+        mainHandler.post(object : Runnable {
+            override fun run() {
+                mainHandler.postDelayed(this, 30000)
+                if (isNotEmpty()) imgSaver.saveImageToStorage(getBitmap())
+            }
+        })
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -54,18 +67,19 @@ class Display : View {
     }
 
     override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
         canvas?.drawColor(colorBackground)
         canvas?.drawBitmap(btmBackground, 0f, 0f, null)
         canvas?.drawBitmap(btmView, 0f, 0f, null)
+        super.onDraw(canvas)
     }
 
     fun setSizeBrush(s: Int) {
         sizeBrush = s
-        mPaint.strokeWidth = sizeBrush.toFloat()
+        mPaint.strokeWidth = toPx(s)
     }
 
     fun setBrushColor(color: Int) {
+        brushColor = color
         mPaint.color = color
     }
 
@@ -75,14 +89,15 @@ class Display : View {
     }
 
     fun enableEraser() {
-        mPaint.style = styleEraser
-        mPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+        eraserEnabled = true
+        mPaint.strokeWidth = toPx(sizeEraser)
+        mPaint.color = colorBackground
     }
 
     fun disableEraser() {
-        mPaint.xfermode = null
-        mPaint.shader = null
-        mPaint.maskFilter = null
+        eraserEnabled = false
+        mPaint.color = brushColor
+        mPaint.strokeWidth = toPx(sizeBrush)
     }
 
     fun setText(s: String) {
@@ -101,6 +116,11 @@ class Display : View {
         addTextSelected = b
     }
 
+    fun setPaintStyle(style: Paint.Style, isBrush: Boolean) {
+        if (isBrush) styleBrush = style
+        else styleEraser = style
+    }
+
     fun clearCanvas() {
         mCanvas.drawColor(colorBackground)
         invalidate()
@@ -108,15 +128,35 @@ class Display : View {
     }
 
     fun saveImage() {
+        imgSaver.saveImageToStorage(getBitmap())
         imgSaver.saveImageToGallery(getBitmap())
     }
 
     fun shareImage() {
-        imgSaver.shareImage(getBitmap())
+        imgSaver.shareImage(getBitmap(), isNotEmpty())
     }
 
-    fun loadImage(path: String) {
-        imgSaver.loadImage(path, mCanvas)
+    fun loadImage(bitmap: Bitmap, fileName: String) {
+        btmView = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+        mCanvas = Canvas(btmView)
+        mCanvas.drawBitmap(btmView, 0f, 0f, null)
+        invalidate()
+        listAction.clear()
+        imgSaver.setFileName(fileName)
+    }
+
+    fun deleteImage() {
+        File(imgSaver.getPath(), imgSaver.getFileName()).delete()
+        newImage()
+    }
+
+    fun newImage() {
+        mCanvas = Canvas()
+        btmView = Bitmap.createBitmap(getBitmap().width, getBitmap().height, Bitmap.Config.ARGB_8888)
+        mCanvas = Canvas(btmView)
+        invalidate()
+        listAction.clear()
+        imgSaver.setFileName(UUID.randomUUID().toString())
     }
 
     private fun addLastAction(bitmap: Bitmap) {
@@ -137,6 +177,7 @@ class Display : View {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val x = event?.x
         val y = event?.y
@@ -185,7 +226,8 @@ class Display : View {
     }
 
     private fun touchStart(x: Float?, y: Float?) {
-        mPaint.style = styleBrush
+        if (eraserEnabled) mPaint.style = styleEraser
+        else mPaint.style = styleBrush
         mPath.moveTo(x!!, y!!)
         mX = x; mY = y
     }
@@ -198,7 +240,23 @@ class Display : View {
         return bitmap
     }
 
+    private fun toPx(sizeBrush: Int): Float {
+        return sizeBrush*(resources.displayMetrics.density)
+    }
+
     fun getPath(): String {
         return imgSaver.getPath()
+    }
+
+    fun getFileName(): String {
+        return imgSaver.getFileName()
+    }
+    fun fileExists(): Boolean {
+        return File(imgSaver.getPath(), imgSaver.getFileName()).exists()
+    }
+
+    fun isNotEmpty(): Boolean {
+        return !getBitmap().sameAs(Bitmap.createBitmap(getBitmap().width, getBitmap().height, getBitmap().config))
+                && listAction.size > 0
     }
 }

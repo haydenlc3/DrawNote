@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -35,7 +34,9 @@
                     android:layout_weight="1"
                     android:ems="8"
                     android:inputType="textPersonName"
-                    android:text="@string/text_default"/>
+                    android:text="@string/text_default"
+                    android:autofillHints=""
+                    tools:ignore="LabelFor" />
 
                 <Space
                     android:layout_width="5dp"
@@ -49,7 +50,9 @@
                     android:layout_weight="1"
                     android:ems="2"
                     android:inputType="number"
-                    android:text="50" />
+                    android:text="50"
+                    android:autofillHints=""
+                    tools:ignore="HardcodedText,LabelFor" />
 
                 <Space
                     android:layout_width="5dp"
@@ -62,9 +65,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:contentDescription="#000000"
-                    android:tint="@color/black"
-                    app:srcCompat="@drawable/circle" />
+                    android:contentDescription="@string/black"
+                    app:srcCompat="@drawable/circle"
+                    app:tint="@color/black" />
 
                 <ImageButton
                     android:id="@+id/colorBrown2"
@@ -72,9 +75,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:contentDescription="#964B00"
-                    android:tint="#964B00"
-                    app:srcCompat="@drawable/circle" />
+                    android:contentDescription="@string/orange"
+                    app:srcCompat="@drawable/circle"
+                    app:tint="#964B00" />
 
                 <ImageButton
                     android:id="@+id/colorRed2"
@@ -82,9 +85,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:contentDescription="#FF0000"
-                    android:tint="#FF0000"
-                    app:srcCompat="@drawable/circle" />
+                    android:contentDescription="@string/red"
+                    app:srcCompat="@drawable/circle"
+                    app:tint="#FF0000" />
 
                 <ImageButton
                     android:id="@+id/colorYellow2"
@@ -92,9 +95,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:contentDescription="#FFFF00"
-                    android:tint="#FFFF00"
-                    app:srcCompat="@drawable/circle" />
+                    android:contentDescription="@string/yellow"
+                    app:srcCompat="@drawable/circle"
+                    app:tint="#FFFF00" />
 
                 <ImageButton
                     android:id="@+id/colorGreen2"
@@ -102,9 +105,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:contentDescription="#00FF00"
-                    android:tint="#00FF00"
-                    app:srcCompat="@drawable/circle" />
+                    android:contentDescription="@string/green"
+                    app:srcCompat="@drawable/circle"
+                    app:tint="#00FF00" />
 
                 <ImageButton
                     android:id="@+id/colorBlue2"
@@ -112,9 +115,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:contentDescription="#0000ff"
-                    android:tint="#0000FF"
-                    app:srcCompat="@drawable/circle" />
+                    android:contentDescription="@string/blue"
+                    app:srcCompat="@drawable/circle"
+                    app:tint="#0000FF" />
 
             </LinearLayout>
         </HorizontalScrollView>
@@ -127,7 +130,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/abc_vector_test" />
+            app:srcCompat="@drawable/abc_vector_test"
+            android:contentDescription="@string/return_main_menu" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
