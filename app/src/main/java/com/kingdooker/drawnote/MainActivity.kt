@@ -2,7 +2,6 @@ package com.kingdooker.drawnote
 
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -170,7 +169,6 @@ class MainActivity : AppCompatActivity() {
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
                                 display.deleteImage()
-                                this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                                 updateScrollView(imageLayout)
                             }
                         }
@@ -189,12 +187,10 @@ class MainActivity : AppCompatActivity() {
                         DialogInterface.BUTTON_POSITIVE -> {
                             display.saveImage()
                             display.newImage()
-                            this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                             updateScrollView(imageLayout)
                         }
                         DialogInterface.BUTTON_NEGATIVE -> {
                             display.newImage()
-                            this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                             updateScrollView(imageLayout)
                         }
                     }
