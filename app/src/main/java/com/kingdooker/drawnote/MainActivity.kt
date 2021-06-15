@@ -2,6 +2,9 @@ package com.kingdooker.drawnote
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Paint
@@ -167,6 +170,7 @@ class MainActivity : AppCompatActivity() {
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
                                 display.deleteImage()
+                                this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                                 updateScrollView(imageLayout)
                             }
                         }
@@ -185,10 +189,13 @@ class MainActivity : AppCompatActivity() {
                         DialogInterface.BUTTON_POSITIVE -> {
                             display.saveImage()
                             display.newImage()
+                            this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                             updateScrollView(imageLayout)
                         }
                         DialogInterface.BUTTON_NEGATIVE -> {
                             display.newImage()
+                            this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                            updateScrollView(imageLayout)
                         }
                     }
                 }
@@ -261,11 +268,11 @@ class MainActivity : AppCompatActivity() {
                                     when (which) {
                                         DialogInterface.BUTTON_POSITIVE -> {
                                             display.saveImage()
-                                            display.loadImage(bitmap, fileName)
+                                            loadImage(imgButton, bitmap, fileName)
                                             updateScrollView(imageLayout)
                                         }
                                         DialogInterface.BUTTON_NEGATIVE -> {
-                                            display.loadImage(bitmap, fileName)
+                                            loadImage(imgButton, bitmap, fileName)
                                         }
                                     }
                                 }
@@ -276,7 +283,7 @@ class MainActivity : AppCompatActivity() {
                                 .setNegativeButton("No", dialogClickListener)
                                 .setNeutralButton("Cancel", dialogClickListener).show()
                         } else {
-                            display.loadImage(bitmap, fileName)
+                            loadImage(imgButton, bitmap, fileName)
                         }
                     }
                 }
@@ -318,6 +325,24 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 imageLayout.addView(imgButton)
+            }
+        }
+    }
+
+    private fun loadImage(img: ImageButton, bitmap: Bitmap, fileName: String) {
+        if (img.width > img.height) {
+            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                display.loadImage(bitmap, fileName)
+            } else {
+                Toast.makeText(this, "Rotate device to open image",
+                    Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                display.loadImage(bitmap, fileName)
+            } else {
+                Toast.makeText(this, "Rotate device to open image",
+                    Toast.LENGTH_SHORT).show()
             }
         }
     }
